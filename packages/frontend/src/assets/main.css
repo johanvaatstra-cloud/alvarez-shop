@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply text-body font-sans antialiased;
+    background-color: #ffffff;
+  }
+
+  h1, h2, h3 {
+    @apply font-display font-light;
+  }
+
+  a {
+    @apply text-body transition-colors duration-200;
+  }
+
+  a:hover {
+    @apply text-accent;
+  }
+
+  :focus-visible {
+    outline: 2px solid #ab1642;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-accent text-white px-6 py-3 font-sans font-semibold text-sm uppercase tracking-wider
+           hover:bg-red-800 transition-colors duration-200 inline-flex items-center gap-2;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent text-body border border-body px-6 py-3 font-sans font-semibold text-sm uppercase tracking-wider
+           hover:bg-body hover:text-white transition-colors duration-200 inline-flex items-center gap-2;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-muted px-4 py-2 font-sans text-sm
+           hover:text-body transition-colors duration-200;
+  }
+
+  .section-title {
+    @apply font-display font-light text-3xl md:text-4xl pb-3 border-b-2 border-accent inline-block mb-8;
+  }
+
+  .card {
+    @apply bg-white border border-border p-6;
+  }
+
+  .input-field {
+    @apply w-full border border-border px-4 py-3 text-sm font-sans
+           focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent
+           placeholder-muted bg-white;
+  }
+
+  .badge {
+    @apply inline-block text-xs font-semibold uppercase tracking-wider px-2 py-0.5;
+  }
+
+  .badge-accent {
+    @apply badge bg-accent text-white;
+  }
+
+  .badge-dark {
+    @apply badge bg-body text-white;
+  }
+
+  .badge-surface {
+    @apply badge bg-surface text-muted border border-border;
+  }
+
+  /* Tag badges */
+  .tag-fi { @apply badge bg-blue-50 text-blue-700 border border-blue-200; }
+  .tag-sf { @apply badge bg-sky-50 text-sky-700 border border-sky-200; }
+  .tag-fd { @apply badge bg-green-50 text-green-700 border border-green-200; }
+  .tag-sp { @apply badge bg-emerald-50 text-emerald-700 border border-emerald-200; }
+
+  .section-dark {
+    @apply bg-black text-white;
+  }
+
+  .section-dark .section-title {
+    @apply text-white;
+  }
+
+  .nav-link {
+    @apply text-sm font-sans font-semibold uppercase tracking-wider text-body
+           hover:text-accent transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-accent;
+  }
+}

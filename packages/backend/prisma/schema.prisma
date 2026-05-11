@@ -1,0 +1,212 @@
+// ─── Alvarez Catalunya — Prisma Schema ───────────────────────────────────────
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+  engineType    = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── PRODUCTS ────────────────────────────────────────────────────────────────
+
+model Product {
+  id           String      @id @default(cuid())
+  sku          String      @unique
+  name         String
+  description  String?
+  brand        String?
+  category     Category    @relation(fields: [categoryId], references: [id])
+  categoryId   String
+  pricePerKg   Float?
+  pricePerUnit Float?
+  unit         String
+  packageSize  String
+  unitsPerBox  Int?
+  images       String[]
+  tags         String[]
+  isActive     Boolean     @default(true)
+  stock        Int         @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  orderItems   OrderItem[]
+
+  @@map("products")
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  icon     String?
+  products Product[]
+
+  @@map("categories")
+}
+
+// ─── CUSTOMER & AUTH ─────────────────────────────────────────────────────────
+
+model Customer {
+  id                String        @id @default(cuid())
+  companyName       String
+  vatNumber         String        @unique
+  chamberOfCommerce String?
+  contactName       String
+  email             String        @unique
+  phone             String?
+  passwordHash      String        @default("")
+  isActive          Boolean       @default(false)
+  mustChangePassword Boolean      @default(false)
+  activationToken   String?       @unique
+  activationExpiry  DateTime?
+  activatedAt       DateTime?
+  lastLoginAt       DateTime?
+  isAdmin           Boolean       @default(false)
+
+  // Payment conditions (read-only from UI — set via CSV import or API)
+  paymentMethod     PaymentMethod @default(ONLINE)
+  creditLimit       Float?
+  paymentTermDays   Int?
+  currentBalance    Float         @default(0)
+  discountPct       Float         @default(0)
+
+  // Import tracking
+  importedAt        DateTime?
+  importBatchId     String?
+  externalId        String?
+
+  addresses         Address[]
+  orders            Order[]
+  invoices          Invoice[]
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@map("customers")
+}
+
+enum PaymentMethod {
+  ONLINE
+  ON_ACCOUNT
+}
+
+model Address {
+  id          String    @id @default(cuid())
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  customerId  String
+  label       String?
+  street      String
+  city        String
+  postalCode  String
+  province    String
+  country     String    @default("ES")
+  isDefault   Boolean   @default(false)
+  orders      Order[]
+
+  @@map("addresses")
+}
+
+// ─── ORDERS ──────────────────────────────────────────────────────────────────
+
+model Order {
+  id            String        @id @default(cuid())
+  orderNumber   String        @unique
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  customerId    String
+  deliveryAddress Address?    @relation(fields: [addressId], references: [id])
+  addressId     String?
+  items         OrderItem[]
+  status        OrderStatus   @default(PENDING)
+  paymentMethod PaymentMethod
+  totalAmount   Float
+  vatAmount     Float
+  discountPct   Float         @default(0)
+  discountAmount Float        @default(0)
+  notes         String?
+  stripePaymentIntentId String?
+  invoice       Invoice?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  unitPrice Float
+
+  @@map("order_items")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// ─── INVOICES ────────────────────────────────────────────────────────────────
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  customerId    String
+  order         Order         @relation(fields: [orderId], references: [id])
+  orderId       String        @unique
+  amount        Float
+  vatAmount     Float
+  dueDate       DateTime
+  status        InvoiceStatus @default(OPEN)
+  paidAt        DateTime?
+  pdfUrl        String?
+  createdAt     DateTime      @default(now())
+
+  @@map("invoices")
+}
+
+enum InvoiceStatus {
+  OPEN
+  PAID
+  OVERDUE
+  DISPUTED
+  CANCELLED
+}
+
+// ─── IMPORT LOG ──────────────────────────────────────────────────────────────
+
+model ImportBatch {
+  id          String    @id @default(cuid())
+  batchId     String    @unique
+  filename    String
+  rowsTotal   Int
+  rowsSuccess Int
+  rowsSkipped Int
+  rowsError   Int
+  errorLog    String?
+  importedBy  String
+  createdAt   DateTime  @default(now())
+
+  @@map("import_batches")
+}
+
+// ─── REFRESH TOKENS ──────────────────────────────────────────────────────────
+
+model RefreshToken {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  customerId String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@map("refresh_tokens")
+}

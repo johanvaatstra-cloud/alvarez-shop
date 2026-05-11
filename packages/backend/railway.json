@@ -1,9 +1,9 @@
 {
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "pnpm install && pnpm build"
+    "buildCommand": "pnpm install && pnpm --filter @alvarez/backend... build"
   },
   "deploy": {
-    "startCommand": "pnpm start"
+    "startCommand": "pnpm --filter @alvarez/backend start"
   }
 }

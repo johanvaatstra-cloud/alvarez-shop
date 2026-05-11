@@ -14,6 +14,6 @@
       "@alvarez/shared": ["../shared/src/index.ts"]
     }
   },
-  "include": ["src", "prisma/seed.ts"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist", "prisma/seed.ts"]
 }

@@ -32,7 +32,7 @@ apiClient.interceptors.response.use(
     original._retry = true
     isRefreshing = true
     try {
-      await apiClient.post('/auth/refresh')
+      await apiClient.post('/auth/refresh', null, { withCredentials: true })
       processQueue(null)
       return apiClient(original)
     } catch (refreshErr) {

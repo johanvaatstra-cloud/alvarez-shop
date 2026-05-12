@@ -26,7 +26,7 @@ function signTokens(customerId: string, email: string, isAdmin: boolean) {
   const accessToken = jwt.sign(
     { sub: customerId, email, isAdmin },
     process.env.JWT_ACCESS_SECRET!,
-    { expiresIn: process.env.NODE_ENV === 'production' ? '15m' : '2h' },
+    { expiresIn: process.env.NODE_ENV === 'production' ? '2h' : '2h' },
   )
   const refreshToken = jwt.sign(
     { sub: customerId },
@@ -79,7 +79,7 @@ export default async function authRoutes(app: FastifyInstance) {
     await prisma.customer.update({ where: { id: customer.id }, data: { lastLoginAt: new Date() } })
 
     reply
-      .setCookie('access_token', accessToken, { ...COOKIE_OPTS, maxAge: 15 * 60 })
+      .setCookie('access_token', accessToken, { ...COOKIE_OPTS, maxAge: 2 * 60 * 60 })
       .setCookie('refresh_token', refreshToken, { ...COOKIE_OPTS, maxAge: 7 * 24 * 60 * 60 })
 
     return reply.send({
@@ -122,7 +122,7 @@ export default async function authRoutes(app: FastifyInstance) {
       })
 
       reply
-        .setCookie('access_token', accessToken, { ...COOKIE_OPTS, maxAge: 15 * 60 })
+        .setCookie('access_token', accessToken, { ...COOKIE_OPTS, maxAge: 2 * 60 * 60 })
         .setCookie('refresh_token', newRefresh, { ...COOKIE_OPTS, maxAge: 7 * 24 * 60 * 60 })
 
       return reply.send({ ok: true })

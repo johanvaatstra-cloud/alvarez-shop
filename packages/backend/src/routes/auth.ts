@@ -38,8 +38,8 @@ function signTokens(customerId: string, email: string, isAdmin: boolean) {
 
 const COOKIE_OPTS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  secure: true,
+  sameSite: 'none' as const,
   path: '/',
 }
 

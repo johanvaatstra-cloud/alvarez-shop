@@ -34,18 +34,17 @@ async function start() {
   })
 
   // ─── Routes ──────────────────────────────────────────────────────────────────
-  await app.register(authRoutes)
-  await app.register(productRoutes)
-  await app.register(orderRoutes)
-  await app.register(invoiceRoutes)
-  await app.register(customerRoutes)
+  await app.register(authRoutes, { prefix: '/api' })
+  await app.register(productRoutes, { prefix: '/api' })
+  await app.register(orderRoutes, { prefix: '/api' })
+  await app.register(invoiceRoutes, { prefix: '/api' })
+  await app.register(customerRoutes, { prefix: '/api' })
 
   // Admin routes (prefixed)
-  await app.register(adminCustomerRoutes)
-  await app.register(adminProductRoutes)
-  await app.register(adminOrderRoutes)
-  await app.register(adminInvoiceRoutes)
-
+ await app.register(adminCustomerRoutes, { prefix: '/api' })
+ await app.register(adminProductRoutes, { prefix: '/api' })
+ await app.register(adminOrderRoutes, { prefix: '/api' })
+ await app.register(adminInvoiceRoutes, { prefix: '/api' })
   // ─── Health check ─────────────────────────────────────────────────────────────
   app.get('/health', async () => ({ ok: true, service: 'Alvarez Catalunya API', ts: new Date().toISOString() }))
 
